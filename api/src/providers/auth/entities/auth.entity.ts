@@ -23,7 +23,7 @@ export class Auth {
   @JoinColumn({ name: 'user_id' })
   user: User;
 
-  @Column({ name: 'expire_at', type: 'timestamp' })
+  @Column({ name: 'expire_at' })
   expireAt: Date;
 
   @CreateDateColumn({ name: 'created_at' })

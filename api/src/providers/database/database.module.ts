@@ -1,16 +1,9 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import * as path from 'path';
+import { databaseProviders } from './data-source';
 
 @Module({
-  imports: [
-    TypeOrmModule.forRoot({
-      type: 'sqlite',
-      database: `${path.join(__dirname, 'database.sqlite')}`,
-      autoLoadEntities: true,
-      synchronize: process.env.NODE_ENV !== 'production',
-    }),
-  ],
+  imports: [TypeOrmModule.forRoot(databaseProviders)],
   providers: [],
   exports: [],
 })
