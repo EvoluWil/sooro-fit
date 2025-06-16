@@ -50,7 +50,7 @@ describe('AuthService', () => {
       userRepository.findOne.mockResolvedValue(null);
       await expect(
         service.signIn({ username: 'test', password: 'pass' }),
-      ).rejects.toThrow('Email ou senha incorretos');
+      ).rejects.toThrow('Usuário ou senha incorretos');
     });
 
     it('should throw if user is inactive', async () => {
@@ -68,7 +68,7 @@ describe('AuthService', () => {
       (bcrypt.compare as jest.Mock) = jest.fn().mockResolvedValue(false);
       await expect(
         service.signIn({ username: 'test', password: 'pass' }),
-      ).rejects.toThrow('Email ou senha incorretos');
+      ).rejects.toThrow('Usuário ou senha incorretos');
     });
 
     it('should return tokens and user if credentials are valid', async () => {

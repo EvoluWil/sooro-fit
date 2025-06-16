@@ -54,7 +54,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new BadRequestException('Email ou senha incorretos');
+      throw new BadRequestException('Usuário ou senha incorretos');
     }
 
     if (user.status === UserStatus.INACTIVE) {
@@ -66,7 +66,7 @@ export class AuthService {
     const passwordMatched = await bcrypt.compare(password, user.password);
 
     if (!passwordMatched) {
-      throw new BadRequestException('Email ou senha incorretos');
+      throw new BadRequestException('Usuário ou senha incorretos');
     }
 
     if (validateOnly) {
