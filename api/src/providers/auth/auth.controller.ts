@@ -1,34 +1,38 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
+import { User } from 'src/@types/user.type';
+import { AuthUser } from 'src/decorators/auth-user.decorator';
+import { IsPublic } from 'src/decorators/public.decorator';
+import { YupValidationPipe } from 'src/pipes/yup.pipe';
 import { AuthService } from './auth.service';
-import { CreateAuthDto } from './dto/create-auth.dto';
-import { UpdateAuthDto } from './dto/update-auth.dto';
+import { RefreshTokenDto, RefreshTokenSchema } from './dto/refresh-token.dto';
+import { SignInDto, SignInSchema } from './dto/sign-in.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
-  create(@Body() createAuthDto: CreateAuthDto) {
-    return this.authService.create(createAuthDto);
+  @IsPublic()
+  @Post('sign-in')
+  signIn(@Body(new YupValidationPipe(SignInSchema)) signInDto: SignInDto) {
+    return this.authService.signIn(signInDto);
   }
 
-  @Get()
-  findAll() {
-    return this.authService.findAll();
+  @Get('me')
+  getMe(@AuthUser() authUser: User) {
+    return this.authService.getMe(authUser.id);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.authService.findOne(+id);
+  @IsPublic()
+  @Post('refresh-token')
+  refreshToken(
+    @Body(new YupValidationPipe(RefreshTokenSchema))
+    refreshTokenDto: RefreshTokenDto,
+  ) {
+    return this.authService.refreshToken(refreshTokenDto.refreshToken);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateAuthDto: UpdateAuthDto) {
-    return this.authService.update(+id, updateAuthDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.authService.remove(+id);
+  @Post('sign-out')
+  signOut(@AuthUser() authUser: User) {
+    return this.authService.signOut(authUser.id);
   }
 }
