@@ -1,4 +1,4 @@
-import { Expose } from 'class-transformer';
+import { Exclude, Expose } from 'class-transformer';
 import { UserRole } from 'src/enums/user-role.enum';
 import { UserStatus } from 'src/enums/user-status.enum';
 
@@ -15,6 +15,7 @@ export class FindUserDto {
   @Expose()
   role: UserRole;
 
+  @Exclude()
   password: string;
 
   @Expose()

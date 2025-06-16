@@ -1,4 +1,9 @@
-import { PartialType } from '@nestjs/mapped-types';
-import { CreateUserDto } from './create-user.dto';
+import * as yup from 'yup';
 
-export class UpdateUserDto extends PartialType(CreateUserDto) {}
+export const updateUserSchema = yup.object({
+  name: yup.string().required('Nome é obrigatório'),
+});
+
+export class UpdateUserDto {
+  name: string;
+}
