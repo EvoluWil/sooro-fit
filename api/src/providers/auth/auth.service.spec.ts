@@ -74,7 +74,7 @@ describe('AuthService', () => {
     it('should return tokens and user if credentials are valid', async () => {
       const user = {
         id: '1',
-        user: 'test',
+        username: 'test',
         status: UserStatus.ACTIVE,
         password: 'hash',
       };
@@ -104,7 +104,7 @@ describe('AuthService', () => {
       );
     });
     it('should return user if found', async () => {
-      userRepository.findOne.mockResolvedValue({ id: '1', user: 'test' });
+      userRepository.findOne.mockResolvedValue({ id: '1', username: 'test' });
       const result = await service.getMe('1');
       expect(result).toHaveProperty('id', '1');
     });

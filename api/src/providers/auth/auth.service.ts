@@ -29,8 +29,8 @@ export class AuthService {
 
     private readonly jwtService: JwtService,
   ) {}
-  private generateAccessToken(id: string, user: string) {
-    const payload = { id, user };
+  private generateAccessToken(id: string, username: string) {
+    const payload = { id, username };
     const token = this.jwtService.sign(payload);
     return token;
   }
@@ -50,7 +50,7 @@ export class AuthService {
   async signIn(signInDto: SignInDto, validateOnly = false) {
     const { username, password } = signInDto;
     const user = await this.userRepository.findOne({
-      where: { user: username },
+      where: { username },
     });
 
     if (!user) {
@@ -73,7 +73,7 @@ export class AuthService {
       return { user: defaultPlainToClass(FindUserDto, user) };
     }
 
-    const accessToken = this.generateAccessToken(user.id, user.user);
+    const accessToken = this.generateAccessToken(user.id, user.username);
     const session = await this.createSession(user.id);
 
     return {
@@ -117,7 +117,10 @@ export class AuthService {
       },
     );
 
-    const accessToken = this.generateAccessToken(auth.user.id, auth.user.user);
+    const accessToken = this.generateAccessToken(
+      auth.user.id,
+      auth.user.username,
+    );
 
     return {
       accessToken,

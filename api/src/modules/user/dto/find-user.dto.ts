@@ -10,7 +10,7 @@ export class FindUserDto {
   name: string;
 
   @Expose()
-  user: string;
+  username: string;
 
   @Expose()
   role: UserRole;

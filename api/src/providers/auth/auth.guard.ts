@@ -55,7 +55,7 @@ export class AuthGuard implements CanActivate {
         throw new UnauthorizedException('Token não enviado');
       }
 
-      const { id, user: username } = await this.jwtService.verifyAsync(token);
+      const { id, username } = await this.jwtService.verifyAsync(token);
       if (isAdmin || isTeacher) {
         const user = await this.userRepository.findOne({
           where: { id },
@@ -74,7 +74,7 @@ export class AuthGuard implements CanActivate {
         }
       }
 
-      request.user = { id, user: username };
+      request.user = { id, username };
     } catch (err) {
       throw new UnauthorizedException('Usuário não autorizado');
     }
