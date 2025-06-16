@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 
-import { DatabaseModule } from './database/database.module';
+import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from './auth/auth.module';
+import { DatabaseModule } from './database/database.module';
 
 @Module({
-  imports: [DatabaseModule, AuthModule],
+  imports: [DatabaseModule, AuthModule, JwtModule],
   providers: [],
   exports: [],
 })
