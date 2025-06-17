@@ -48,14 +48,11 @@ export class AuthGuard implements CanActivate {
     }
 
     try {
-      if (!token) {
-        if (isPublic) {
-          return true;
-        }
-        throw new UnauthorizedException('Token não enviado');
+      if (isPublic) {
+        return true;
       }
 
-      const { id, username } = await this.jwtService.verifyAsync(token);
+      const { id, username } = await this.jwtService.verifyAsync(token || '');
       if (isAdmin || isTeacher) {
         const user = await this.userRepository.findOne({
           where: { id },
