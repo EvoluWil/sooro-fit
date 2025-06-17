@@ -1,3 +1,4 @@
+import { AppProvider } from '@/providers/app.provider';
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
 import './globals.css';
@@ -19,8 +20,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
-      <body className={`${poppins.variable}`}>{children}</body>
+    <html lang="pt-BR" suppressHydrationWarning>
+      <body className={`${poppins.variable}`}>
+        <AppProvider>{children}</AppProvider>
+      </body>
     </html>
   );
 }
