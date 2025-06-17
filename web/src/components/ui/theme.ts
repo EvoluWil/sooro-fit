@@ -2,6 +2,28 @@ import { createSystem, defaultConfig, defineConfig } from '@chakra-ui/react';
 
 const customTheme = defineConfig({
   theme: {
+    semanticTokens: {
+      colors: {
+        brand: {
+          solid: { value: '{colors.brand.500}' },
+          contrast: { value: '{colors.brand.100}' },
+          fg: { value: '{colors.brand.700}' },
+          muted: { value: '{colors.brand.100}' },
+          subtle: { value: '{colors.brand.200}' },
+          emphasized: { value: '{colors.brand.300}' },
+          focusRing: { value: '{colors.brand.500}' },
+        },
+        secondary: {
+          solid: { value: '{colors.secondary.500}' },
+          contrast: { value: '{colors.secondary.100}' },
+          fg: { value: '{colors.secondary.700}' },
+          muted: { value: '{colors.secondary.100}' },
+          subtle: { value: '{colors.secondary.200}' },
+          emphasized: { value: '{colors.secondary.300}' },
+          focusRing: { value: '{colors.secondary.500}' },
+        },
+      },
+    },
     tokens: {
       colors: {
         brand: {
@@ -32,6 +54,19 @@ const customTheme = defineConfig({
       fonts: {
         body: { value: 'Poppins, sans-serif' },
         heading: { value: 'Poppins, sans-serif' },
+      },
+    },
+    recipes: {
+      input: {
+        base: {
+          colorPalette: 'brand',
+          paddingLeft: '8px !important',
+        },
+      },
+      button: {
+        base: {
+          colorPalette: 'brand',
+        },
       },
     },
   },
