@@ -19,7 +19,7 @@ export const StudentCard: React.FC<StudentCardProps> = ({
               <Avatar.Fallback name={student.name} />
             </Avatar.Root>
             <Stack gap="0">
-              <Text fontWeight="semibold" textStyle="sm">
+              <Text fontWeight="semibold" textStyle="sm" textAlign="left">
                 {student.name}
               </Text>
               <Text color="gray.500" textStyle="sm" textAlign="left">

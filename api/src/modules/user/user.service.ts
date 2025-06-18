@@ -5,8 +5,9 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserRole } from 'src/enums/user-role.enum';
 import { defaultPlainToClass } from 'src/utils/default-plain-to-class';
-import { Repository } from 'typeorm';
+import { Not, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FindUserDto } from './dto/find-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -39,12 +40,21 @@ export class UserService {
   }
 
   async findAll() {
-    const users = await this.userRepository.find();
+    const users = await this.userRepository.find({
+      where: {
+        role: Not(UserRole.STUDENT),
+      },
+    });
     return defaultPlainToClass(FindUserDto, users);
   }
 
   async findOne(id: string) {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: {
+        id,
+        role: Not(UserRole.STUDENT),
+      },
+    });
 
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');

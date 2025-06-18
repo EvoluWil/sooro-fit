@@ -1,3 +1,5 @@
+import { UserList } from '@/components/template/user-list';
+import { usersService } from '@/services/user.service';
 import { User } from '@/types/user.type';
 import { roleValidator } from '@/utils/role-validator';
 import { getUserSession } from '@/utils/session';
@@ -10,9 +12,7 @@ export default async function UserPage() {
     return redirect('/');
   }
 
-  return (
-    <div>
-      <h1>Users</h1>
-    </div>
-  );
+  const users = await usersService.findAll();
+
+  return <UserList users={users || []} />;
 }

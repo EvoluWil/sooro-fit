@@ -13,13 +13,13 @@ type Route = {
 export const routes: Route[] = [
   {
     path: '/dashboard',
-    rule: roleValidator.isTeacher,
+    rule: roleValidator.isStudentOnly,
     icon: <FiHome />,
     label: 'Início',
   },
   {
     path: '/students',
-    rule: roleValidator.isAdmin,
+    rule: roleValidator.isTeacher,
     icon: <PiStudent />,
     label: 'Alunos',
   },
