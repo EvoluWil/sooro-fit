@@ -1,21 +1,25 @@
 import { User, UserRole } from '@/types/user.type';
 
 class RoleValidator {
-  isAdmin(user: User): boolean {
-    return user.role === UserRole.ADMIN;
-  }
+  isAdmin = (user?: User): boolean => {
+    return user?.role === UserRole.ADMIN;
+  };
 
-  isTeacher(user: User): boolean {
-    return user.role === UserRole.TEACHER || this.isAdmin(user);
-  }
+  isTeacher = (user?: User): boolean => {
+    return user?.role === UserRole.TEACHER || this.isAdmin(user);
+  };
 
-  isStudent(user: User): boolean {
+  isStudent = (user?: User): boolean => {
     return (
-      user.role === UserRole.STUDENT ||
+      user?.role === UserRole.STUDENT ||
       this.isTeacher(user) ||
       this.isAdmin(user)
     );
-  }
+  };
+
+  isStudentOnly = (user?: User): boolean => {
+    return user?.role === UserRole.STUDENT;
+  };
 }
 
 export const roleValidator = new RoleValidator();

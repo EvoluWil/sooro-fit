@@ -1,3 +1,4 @@
+import { Box } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
 import { PropsWithChildren } from 'react';
 import { getUserSession } from '../../utils/session';
@@ -9,5 +10,15 @@ export default async function PrivateLayout({ children }: PropsWithChildren) {
     return redirect('/auth/sign-in');
   }
 
-  return <div>{children}</div>;
+  return (
+    <Box
+      as="main"
+      minHeight="calc(100vh - 72px)"
+      display="flex"
+      flexDirection="column"
+      p={{ base: 4, md: 6, lg: 8 }}
+    >
+      {children}
+    </Box>
+  );
 }

@@ -1,3 +1,4 @@
+import { Header } from '@/components/organisms/header';
 import { AppProvider } from '@/providers/app.provider';
 import type { Metadata } from 'next';
 import { Poppins } from 'next/font/google';
@@ -22,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className={`${poppins.variable}`}>
-        <AppProvider>{children}</AppProvider>
+        <AppProvider>
+          <Header />
+          {children}
+        </AppProvider>
       </body>
     </html>
   );

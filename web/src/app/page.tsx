@@ -6,10 +6,10 @@ export default async function HomePage() {
   const user = await getUserSession();
 
   if (user) {
-    if (roleValidator.isStudent(user)) {
+    if (roleValidator.isStudentOnly(user)) {
       return redirect(`/students/${user.id}`);
     }
-    return redirect('/dashboard');
+    return redirect('/students');
   }
 
   redirect('/auth/sign-in');
