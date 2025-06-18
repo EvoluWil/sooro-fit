@@ -8,7 +8,11 @@ export const createUserSchema = yup.object({
   role: yup
     .mixed<UserRole>()
     .oneOf(Object.values(UserRole), 'Nível de acesso inválido')
-    .required('Nível de acesso é obrigatório'),
+    .required('Nível de acesso é obrigatório')
+    .notOneOf(
+      [UserRole.STUDENT],
+      'Apenas usuários com nível de acesso PROFESSOR e ADMINISTRADOR podem ser criados',
+    ),
 });
 
 export class CreateUserDto {
