@@ -1,3 +1,5 @@
+import { StudentList } from '@/components/template/student-list';
+import { studentsService } from '@/services/student.service';
 import { User } from '@/types/user.type';
 import { roleValidator } from '@/utils/role-validator';
 import { getUserSession } from '@/utils/session';
@@ -10,9 +12,7 @@ export default async function StudentPage() {
     return redirect('/');
   }
 
-  return (
-    <div>
-      <h1>Students</h1>
-    </div>
-  );
+  const students = await studentsService.findAll();
+
+  return <StudentList students={students || []} />;
 }

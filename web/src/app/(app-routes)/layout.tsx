@@ -1,4 +1,4 @@
-import { Box } from '@chakra-ui/react';
+import { Box, Container } from '@chakra-ui/react';
 import { redirect } from 'next/navigation';
 import { PropsWithChildren } from 'react';
 import { getUserSession } from '../../utils/session';
@@ -18,7 +18,9 @@ export default async function PrivateLayout({ children }: PropsWithChildren) {
       flexDirection="column"
       p={{ base: 4, md: 6, lg: 8 }}
     >
-      {children}
+      <Container maxW="container.md" mx="auto">
+        {children}
+      </Container>
     </Box>
   );
 }

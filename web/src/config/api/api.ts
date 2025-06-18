@@ -23,16 +23,21 @@ const handleRefreshToken = async (
 
     throw new Error('Failed to refresh token');
   } catch {
-    toast?.error('Sessão expirada. Faça login novamente.');
+    if (typeof window !== 'undefined') {
+      toast?.error('Sessão expirada. Faça login novamente.');
+    }
     signOut({
       callbackUrl: '/auth/sign-in',
       redirect: true,
     });
+
+    return { data: null };
   }
 };
 
 api.interceptors.response.use(null, async (err) => {
-  if (global?.window) {
+  console.log('API Error:', err.response?.data);
+  if (typeof window !== 'undefined') {
     const defaultMessage = 'Ops! Algo deu errado. Tente novamente mais tarde.';
     if (typeof err.response?.data?.message === 'string') {
       toast?.error(err.response?.data?.message);
@@ -59,11 +64,11 @@ api.interceptors.response.use(null, async (err) => {
 
 api.interceptors.request.use(async (config) => {
   if (!config.headers.Authorization) {
-    if (!global?.window) {
+    if (typeof window === 'undefined') {
       const session = await getServerSession(authOptions);
       config.headers.Authorization = `Bearer ${session?.user?.accessToken}`;
     }
-    if (global?.window) {
+    if (typeof window !== 'undefined') {
       const session = await getSession();
       if (session?.user?.accessToken) {
         config.headers.Authorization = `Bearer ${session?.user?.accessToken}`;

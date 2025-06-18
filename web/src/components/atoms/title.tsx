@@ -9,7 +9,7 @@ type TitleProps = {
 export const Title = ({ title, subtitle }: TitleProps) => {
   return (
     <>
-      <Heading p={2}>{title}</Heading>
+      <Heading py={2}>{title}</Heading>
       {subtitle && (
         <Text color="gray.500" fontSize="sm">
           {subtitle}

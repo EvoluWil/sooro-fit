@@ -37,7 +37,7 @@ export const InputBase = forwardRef<HTMLInputElement, InputBaseProps>(
 
     return (
       <Field.Root invalid={!!error} required={!!label}>
-        {label && <Field.Label>{label}</Field.Label>}
+        {label && <Field.Label color="gray.500">{label}</Field.Label>}
 
         <InputGroup
           startElement={icon && icon}
