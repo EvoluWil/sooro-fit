@@ -39,6 +39,8 @@ export class AuthService {
     const refreshToken = randomBytes(64).toString('hex');
     const expireAt = new Date(Date.now() + SEVEN_DAYS);
 
+    await this.authRepository.delete({ user: { id: userId } });
+
     await this.authRepository.insert({
       expireAt,
       refreshToken,
@@ -123,6 +125,7 @@ export class AuthService {
     );
 
     return {
+      user: defaultPlainToClass(FindUserDto, auth.user),
       accessToken,
       expiresAt: Date.now() + TWENTY_MINUTES,
       refreshToken: newRefreshToken,
