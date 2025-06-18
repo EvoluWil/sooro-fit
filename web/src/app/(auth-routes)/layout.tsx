@@ -8,7 +8,7 @@ export default async function AuthLayout({ children }: PropsWithChildren) {
   const user = await getUserSession();
 
   if (user) {
-    return redirect('/movies');
+    return redirect('/dashboard');
   }
 
   return (
