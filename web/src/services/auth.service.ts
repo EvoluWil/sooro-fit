@@ -37,6 +37,29 @@ class AuthService {
     const { data } = await api.get<User>('/auth/me');
     return data;
   }
+
+  async signOut() {
+    const { data } = await api.post('/auth/sign-out');
+    return data;
+  }
+
+  async refreshToken(refreshToken: string) {
+    const { data } = await api.post<SignInResponse>('/auth/refresh-token', {
+      refreshToken,
+    });
+
+    if (data) {
+      await signIn('credentials', {
+        ...data,
+        user: JSON.stringify(data.user),
+        redirect: false,
+      });
+
+      return data;
+    }
+
+    throw new Error('Failed to refresh token');
+  }
 }
 
 export const authService = new AuthService();

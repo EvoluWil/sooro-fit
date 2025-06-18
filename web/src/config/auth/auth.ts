@@ -11,8 +11,26 @@ export const authOptions: NextAuthOptions = {
       credentials: {
         username: { label: 'username', type: 'text' },
         password: { label: 'password', type: 'password' },
+        refreshToken: { label: 'refreshToken', type: 'text' },
+        accessToken: { label: 'accessToken', type: 'text' },
+        expiresAt: { label: 'expiresAt', type: 'number' },
+        user: { label: 'user', type: 'text' },
       },
       async authorize(credentials) {
+        if (
+          !credentials?.username &&
+          !credentials?.password &&
+          credentials?.refreshToken
+        ) {
+          const user = JSON.parse(credentials?.user);
+          return {
+            ...user,
+            accessToken: credentials.accessToken,
+            refreshToken: credentials.refreshToken,
+            expiresAt: credentials.expiresAt,
+          };
+        }
+
         const result = (await authService.signIn({
           username: credentials?.username as string,
           password: credentials?.password as string,
@@ -24,7 +42,6 @@ export const authOptions: NextAuthOptions = {
             accessToken: result.accessToken,
             refreshToken: result.refreshToken,
             expiresAt: result.expiresAt,
-            token: result.accessToken,
           };
         }
 
@@ -32,23 +49,17 @@ export const authOptions: NextAuthOptions = {
       },
     }),
   ],
-  pages: {
-    signIn: '/auth/sign-in',
-  },
   callbacks: {
-    async jwt({ token, user, trigger, session }) {
+    async jwt({ token, user }) {
       if (user) {
         const userWithTokens = user as unknown as UserWithTokens;
         token.id = userWithTokens.id;
         token.name = userWithTokens.name;
+        token.username = userWithTokens.username;
         token.role = userWithTokens.role;
         token.accessToken = userWithTokens.accessToken;
         token.refreshToken = userWithTokens.refreshToken;
         token.expiresAt = userWithTokens.expiresAt;
-      }
-
-      if (trigger === 'update' && session) {
-        token.name = session.name;
       }
 
       return token;

@@ -1,7 +1,7 @@
-import axios from 'axios';
+import { authService } from '@/services/auth.service';
+import axios, { AxiosRequestConfig } from 'axios';
 import { getServerSession } from 'next-auth';
-import { getSession } from 'next-auth/react';
-import { redirect } from 'next/navigation';
+import { getSession, signOut } from 'next-auth/react';
 import { toast } from 'react-toastify';
 import { authOptions } from '../auth/auth';
 
@@ -9,7 +9,29 @@ export const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
 });
 
-api.interceptors.response.use(null, (err) => {
+const handleRefreshToken = async (
+  refreshToken: string,
+  originalRequest: AxiosRequestConfig,
+) => {
+  try {
+    const result = await authService.refreshToken(refreshToken);
+
+    if (result?.accessToken && originalRequest?.headers) {
+      originalRequest.headers.Authorization = `Bearer ${result.accessToken}`;
+      return api(originalRequest);
+    }
+
+    throw new Error('Failed to refresh token');
+  } catch {
+    toast?.error('Sessão expirada. Faça login novamente.');
+    signOut({
+      callbackUrl: '/auth/sign-in',
+      redirect: true,
+    });
+  }
+};
+
+api.interceptors.response.use(null, async (err) => {
   if (global?.window) {
     const defaultMessage = 'Ops! Algo deu errado. Tente novamente mais tarde.';
     if (typeof err.response?.data?.message === 'string') {
@@ -17,9 +39,19 @@ api.interceptors.response.use(null, (err) => {
     } else {
       toast?.error(err.response?.data?.message[0] || defaultMessage);
     }
+
+    if (err?.response?.data?.statusCode === 401) {
+      const session = await getSession();
+      if (session?.user?.refreshToken) {
+        return handleRefreshToken(session.user.refreshToken, err.config);
+      }
+    }
   } else {
     if (err?.response?.data?.statusCode === 401) {
-      redirect('/');
+      const session = await getServerSession(authOptions);
+      if (session?.user?.refreshToken) {
+        return handleRefreshToken(session.user.refreshToken, err.config);
+      }
     }
   }
   return { data: null };
