@@ -41,6 +41,7 @@ export const authOptions: NextAuthOptions = {
         const userWithTokens = user as unknown as UserWithTokens;
         token.id = userWithTokens.id;
         token.name = userWithTokens.name;
+        token.role = userWithTokens.role;
         token.accessToken = userWithTokens.accessToken;
         token.refreshToken = userWithTokens.refreshToken;
         token.expiresAt = userWithTokens.expiresAt;
