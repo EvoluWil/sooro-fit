@@ -27,7 +27,7 @@ export class User {
   @Column({ length: 20 })
   role: UserRole;
 
-  @Column({ length: 10 })
+  @Column({ length: 10, default: UserStatus.ACTIVE })
   status: UserStatus;
 
   @CreateDateColumn({ name: 'created_at' })
