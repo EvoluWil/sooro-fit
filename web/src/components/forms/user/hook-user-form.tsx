@@ -1,7 +1,6 @@
-import { usersService } from '@/services/user.service';
+import { useUserMutation } from '@/hooks/queries/user';
 import { useDisclosure } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -18,8 +17,9 @@ export const useUserForm = ({
   onClose: emitClose,
 }: DrawerUserFormProps) => {
   const isEditing = !!user;
-  const { refresh } = useRouter();
   const { open, onClose, onToggle } = useDisclosure();
+  const mutation = useUserMutation();
+
   const { control, handleSubmit, reset } = useForm<UserForm>({
     defaultValues: isEditing
       ? {
@@ -30,11 +30,13 @@ export const useUserForm = ({
   });
 
   const handleCreateUser = async (data: UserForm) => {
-    const result = await usersService.create(data);
+    const result = await mutation.mutateAsync({
+      type: 'create',
+      data,
+    });
 
     if (result) {
       toast.success('Aluno criado com sucesso!');
-      refresh();
       handleClose();
     }
   };
@@ -44,11 +46,14 @@ export const useUserForm = ({
       return toast.error('Aluno não encontrado.');
     }
 
-    const result = await usersService.update(user.id, data);
+    const result = await mutation.mutateAsync({
+      type: 'update',
+      id: user.id,
+      data,
+    });
 
     if (result) {
       toast.success('Aluno atualizado com sucesso!');
-      refresh();
       handleClose();
     }
   };

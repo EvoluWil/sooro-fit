@@ -1,9 +1,8 @@
 'use client';
 
-import { usersService } from '@/services/user.service';
+import { useUserMutation, useUsersQuery } from '@/hooks/queries/user';
 import { User } from '@/types/user.type';
 import { Box, Grid, Heading, HStack } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import swal from 'sweetalert2';
@@ -17,8 +16,9 @@ type UserListProps = {
 
 export const UserList = ({ users }: UserListProps) => {
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const { data = users } = useUsersQuery();
 
-  const { refresh } = useRouter();
+  const mutation = useUserMutation();
 
   const handleSelectUserToEdit = (user: User) => {
     setSelectedUser(user);
@@ -33,9 +33,12 @@ export const UserList = ({ users }: UserListProps) => {
       confirmButtonText: 'Sim, excluir',
       cancelButtonText: 'Cancelar',
       preConfirm: async () => {
-        const result = await usersService.delete(user.id);
+        const result = await mutation.mutateAsync({
+          type: 'delete',
+          id: user.id,
+        });
+
         if (result) {
-          refresh();
           toast.success('Usuário excluído com sucesso!');
         }
       },
@@ -56,14 +59,14 @@ export const UserList = ({ users }: UserListProps) => {
         />
       </HStack>
 
-      {users?.length === 0 && <NoData message="Nenhum usuário encontrado." />}
+      {data?.length === 0 && <NoData message="Nenhum usuário encontrado." />}
 
       <Grid
         templateColumns="repeat(auto-fill, minmax(320px, 1fr))"
         gap={4}
         mt={8}
       >
-        {users.map((user) => (
+        {data.map((user) => (
           <UserCard
             key={user.id}
             user={user}
