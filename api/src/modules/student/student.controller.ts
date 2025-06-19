@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { IsAdmin } from 'src/decorators/system-admin.decorator';
 import { IsTeacher } from 'src/decorators/teacher.decorator';
@@ -35,8 +36,8 @@ export class StudentController {
 
   @IsTeacher()
   @Get()
-  findAll() {
-    return this.studentService.findAll();
+  findAll(@Query('active') active?: boolean) {
+    return this.studentService.findAll(active);
   }
 
   @IsTeacher()

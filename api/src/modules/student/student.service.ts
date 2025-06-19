@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from 'src/enums/user-role.enum';
+import { UserStatus } from 'src/enums/user-status.enum';
 import { defaultPlainToClass } from 'src/utils/default-plain-to-class';
 import { Repository } from 'typeorm';
 import { FindUserDto } from '../user/dto/find-user.dto';
@@ -43,9 +44,12 @@ export class StudentService {
     return { ok: true, message: 'Usuário criado com sucesso' };
   }
 
-  async findAll() {
+  async findAll(active?: boolean) {
     const users = await this.userRepository.find({
-      where: { role: UserRole.STUDENT },
+      where: {
+        role: UserRole.STUDENT,
+        status: active ? UserStatus.ACTIVE : undefined,
+      },
     });
     return defaultPlainToClass(FindUserDto, users);
   }
