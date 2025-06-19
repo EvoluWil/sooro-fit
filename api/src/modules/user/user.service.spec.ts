@@ -2,6 +2,7 @@ import { ConflictException, NotFoundException } from '@nestjs/common';
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
+import { UserStatus } from 'src/enums/user-status.enum';
 import { User } from './entities/user.entity';
 import { UserService } from './user.service';
 
@@ -78,14 +79,17 @@ describe('UserService', () => {
   describe('update', () => {
     it('should throw if user not found', async () => {
       userRepository.findOne.mockResolvedValue(null);
-      await expect(service.update('1', { name: 'test' })).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update('1', { name: 'test', status: UserStatus.ACTIVE }),
+      ).rejects.toThrow(NotFoundException);
     });
     it('should update user if found', async () => {
       userRepository.findOne.mockResolvedValue({ id: '1' });
       userRepository.update.mockResolvedValue({});
-      const result = await service.update('1', { name: 'test' });
+      const result = await service.update('1', {
+        name: 'test',
+        status: UserStatus.INACTIVE,
+      });
       expect(result).toHaveProperty('ok', true);
     });
   });
