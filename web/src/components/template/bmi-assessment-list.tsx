@@ -111,10 +111,10 @@ export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
                   IMC
                 </Table.ColumnHeader>
                 <Table.ColumnHeader p={2} textAlign="end">
-                  ALTURA
+                  ALTURA(CM)
                 </Table.ColumnHeader>
                 <Table.ColumnHeader p={2} textAlign="end">
-                  PESO
+                  PESO(KG)
                 </Table.ColumnHeader>
                 <Table.ColumnHeader p={2} textAlign="center">
                   DATA
