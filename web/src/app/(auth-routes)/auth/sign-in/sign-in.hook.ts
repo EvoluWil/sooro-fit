@@ -29,7 +29,7 @@ export const useSignIn = () => {
       return toast.error('Usuário ou senha inválidos!');
     }
 
-    replace('/students');
+    replace('/bmi-assessment');
   });
 
   return {
