@@ -1,4 +1,4 @@
-import { UserRole } from '@/types/user.type';
+import { UserRole, UserStatus } from '@/types/user.type';
 import * as yup from 'yup';
 
 export type UserForm = {
@@ -7,6 +7,7 @@ export type UserForm = {
   username?: string;
   password?: string;
   passwordConfirmation?: string;
+  status: UserStatus;
 };
 
 export const userFormInitialValues: UserForm = {
@@ -15,6 +16,7 @@ export const userFormInitialValues: UserForm = {
   username: '',
   password: '',
   passwordConfirmation: '',
+  status: UserStatus.ACTIVE,
 };
 
 export const userFormEditSchema = yup.object().shape({
@@ -30,6 +32,10 @@ export const userFormEditSchema = yup.object().shape({
       [UserRole.STUDENT],
       'Apenas usuários com nível de acesso PROFESSOR e ADMINISTRADOR podem ser criados',
     ),
+  status: yup
+    .mixed<UserStatus>()
+    .oneOf(Object.values(UserStatus), 'Status deve ser ativo ou inativo')
+    .required('Status é obrigatório'),
 });
 
 export const userFormSchema = yup

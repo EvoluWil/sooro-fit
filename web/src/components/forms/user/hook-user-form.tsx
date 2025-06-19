@@ -71,6 +71,7 @@ export const useUserForm = ({
       reset({
         name: user.name,
         role: user.role,
+        status: user.status,
       });
     }
   }, [user]);

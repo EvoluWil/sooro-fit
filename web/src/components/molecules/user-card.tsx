@@ -1,4 +1,4 @@
-import { User, UserRoleLabel } from '@/types/user.type';
+import { User, UserRoleLabel, UserStatus } from '@/types/user.type';
 import {
   Avatar,
   Badge,
@@ -22,11 +22,17 @@ export const UserCard: React.FC<UserCardProps> = ({
   onEditClick,
   onDeleteClick,
 }) => {
+  const isActive = user.status === UserStatus.ACTIVE;
   return (
-    <Card.Root key={user.id} variant="elevated" borderRadius="md" p={4}>
+    <Card.Root
+      key={user.id}
+      variant={isActive ? 'elevated' : 'subtle'}
+      borderRadius="md"
+      p={4}
+    >
       <Card.Body>
         <HStack gap="3">
-          <Avatar.Root>
+          <Avatar.Root colorPalette="brand">
             <Avatar.Fallback name={user.name} />
           </Avatar.Root>
           <Stack gap="0">

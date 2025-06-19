@@ -1,7 +1,7 @@
 import { DrawerBase } from '@/components/atoms/drawer-base';
 import { InputText } from '@/components/molecules/input-text';
 import { Select } from '@/components/molecules/select';
-import { User, userRoleOptions } from '@/types/user.type';
+import { User, userRoleOptions, userStatusOptions } from '@/types/user.type';
 import { Button } from '@chakra-ui/react';
 import { useUserForm } from './hook-user-form';
 
@@ -16,7 +16,7 @@ export const DrawerUserForm: React.FC<DrawerUserFormProps> = (props) => {
   return (
     <>
       <Button onClick={onToggle} p={4}>
-        {isEditing ? 'Editar Usuário' : 'Adicionar Usuário'}
+        Adicionar Usuário
       </Button>
       <DrawerBase
         title={isEditing ? 'Editar Usuário' : 'Adicionar Usuário'}
@@ -41,6 +41,16 @@ export const DrawerUserForm: React.FC<DrawerUserFormProps> = (props) => {
               label="Nome"
               placeholder="Digite o nome"
             />
+
+            {isEditing && (
+              <Select
+                name="status"
+                control={control}
+                label="Status"
+                placeholder="Selecione o status"
+                options={userStatusOptions}
+              />
+            )}
 
             {!isEditing && (
               <>
