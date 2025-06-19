@@ -4,7 +4,6 @@ import { studentsService } from '@/services/student.service';
 import { User } from '@/types/user.type';
 import { useDisclosure } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -15,10 +14,13 @@ import {
   bmiFormInitialValues,
 } from './schema-bmi-form';
 
-export const useBmiForm = ({ bmi, onClose: emitClose }: DrawerBmiFormProps) => {
+export const useBmiForm = ({
+  bmi,
+  onClose: emitClose,
+  onSuccess,
+}: DrawerBmiFormProps) => {
   const isEditing = !!bmi;
   const [students, setStudents] = useState<SelectOption[]>([]);
-  const { refresh } = useRouter();
   const { open, onClose, onToggle } = useDisclosure();
 
   const { control, handleSubmit, reset } = useForm<BmiForm>({
@@ -31,7 +33,7 @@ export const useBmiForm = ({ bmi, onClose: emitClose }: DrawerBmiFormProps) => {
 
     if (result) {
       toast.success('Avaliação de IMC criada com sucesso!');
-      refresh();
+      onSuccess();
       handleClose();
     }
   };
@@ -47,7 +49,7 @@ export const useBmiForm = ({ bmi, onClose: emitClose }: DrawerBmiFormProps) => {
 
     if (result) {
       toast.success('Avaliação de IMC atualizada com sucesso!');
-      refresh();
+      onSuccess();
       handleClose();
     }
   };

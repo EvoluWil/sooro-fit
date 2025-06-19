@@ -8,6 +8,7 @@ import { useBmiForm } from './hook-bmi-form';
 export type DrawerBmiFormProps = {
   bmi?: BmiAssessment | null;
   onClose: () => void;
+  onSuccess: () => void;
 };
 
 export const DrawerBmiForm: React.FC<DrawerBmiFormProps> = (props) => {
@@ -23,7 +24,7 @@ export const DrawerBmiForm: React.FC<DrawerBmiFormProps> = (props) => {
   return (
     <>
       <Button onClick={onToggle} p={4}>
-        Adicionar avaliação de IMC
+        Adicionar avaliação
       </Button>
       <DrawerBase
         title={isEditing ? 'Editar Avaliação de IMC' : 'Nova Avaliação de IMC'}

@@ -3,6 +3,7 @@
 import { useSession } from '@/providers/session.provider';
 import { bmiService } from '@/services/bmi.service';
 import { BmiAssessment } from '@/types/bmi-assessment.type';
+import { UsersFilterOptions } from '@/utils/get-searchable-users';
 import { roleValidator } from '@/utils/role-validator';
 import { Box, Heading, HStack, Stack, Table } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
@@ -11,14 +12,20 @@ import { toast } from 'react-toastify';
 import swal from 'sweetalert2';
 import { DrawerBmiForm } from '../forms/bmi/drawer-bmi-form';
 import { BmiCell } from '../molecules/bmi-cell';
+import { DrawerBmiFilter } from '../organisms/bmi-assessments-filter/drawer-bmi-filter';
+import { BmiFilterForm } from '../organisms/bmi-assessments-filter/schema-bmi-filter';
 
 type BmiAssessmentListProps = {
   bmiAssessments: BmiAssessment[];
+  usersFilterOptions: UsersFilterOptions;
 };
 
 export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
   bmiAssessments,
+  usersFilterOptions,
 }) => {
+  const [bmiAssessmentsState, setBmiAssessmentsState] =
+    useState<BmiAssessment[]>(bmiAssessments);
   const [selectedBmiAssessment, setSelectedBmiAssessment] =
     useState<BmiAssessment | null>(null);
 
@@ -47,7 +54,12 @@ export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
     });
   };
 
-  console.log('bmiAssessments', bmiAssessments);
+  const handleFilter = async (data: BmiFilterForm) => {
+    const filteredBmiAssessments = await bmiService.findAll(data);
+    if (Array.isArray(filteredBmiAssessments)) {
+      setBmiAssessmentsState(filteredBmiAssessments);
+    }
+  };
 
   return (
     <Box>
@@ -57,13 +69,27 @@ export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
             Avaliações de IMC
           </Heading>
         </Box>
-        <DrawerBmiForm
-          bmi={selectedBmiAssessment}
-          onClose={() => setSelectedBmiAssessment(null)}
-        />
+        <Box display="flex" gap={2}>
+          <DrawerBmiForm
+            bmi={selectedBmiAssessment}
+            onClose={() => setSelectedBmiAssessment(null)}
+            onSuccess={() => handleFilter({} as BmiFilterForm)}
+          />
+          {user && roleValidator.isTeacher(user) && (
+            <DrawerBmiFilter
+              onFilter={handleFilter}
+              students={usersFilterOptions.students || []}
+              teachers={
+                roleValidator.isAdmin(user)
+                  ? usersFilterOptions.teachers || []
+                  : []
+              }
+            />
+          )}
+        </Box>
       </HStack>
 
-      {bmiAssessments?.length === 0 && (
+      {bmiAssessmentsState?.length === 0 && (
         <Box mt={4} p={4} bg="gray.50" rounded="md" textAlign="center">
           <Heading size="md" color="gray.500">
             Nenhuma avaliação de IMC encontrada.
@@ -71,7 +97,7 @@ export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
         </Box>
       )}
 
-      {bmiAssessments.length > 0 && (
+      {bmiAssessmentsState.length > 0 && (
         <Stack p={4} mt={4} bg="gray.50" rounded="md">
           <Table.Root size="md" p={4}>
             <Table.Header>
@@ -101,7 +127,7 @@ export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
             </Table.Header>
 
             <Table.Body>
-              {bmiAssessments?.map((bmiAssessment, index) => (
+              {bmiAssessmentsState?.map((bmiAssessment, index) => (
                 <BmiCell
                   key={bmiAssessment.id}
                   bmiAssessment={bmiAssessment}
