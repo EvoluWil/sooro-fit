@@ -12,7 +12,7 @@ export const useBmiFilter = ({
 }: BmiAssessmentsFilterProps) => {
   const { open, onClose, onToggle } = useDisclosure();
   const { user } = useSession();
-  const { control, handleSubmit, reset } = useForm<BmiFilterForm>({
+  const { control, handleSubmit } = useForm<BmiFilterForm>({
     defaultValues: bmiFilterFormInitialValues,
   });
 
@@ -22,7 +22,6 @@ export const useBmiFilter = ({
   });
 
   const handleClose = () => {
-    reset(bmiFilterFormInitialValues);
     onClose();
   };
 
