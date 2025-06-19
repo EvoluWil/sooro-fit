@@ -1,10 +1,5 @@
 import { FieldValues } from 'react-hook-form';
 
-export const userRoleOptions = [
-  { value: 'admin', label: 'Administrador' },
-  { value: 'teacher', label: 'Professor' },
-];
-
 export enum UserRole {
   ADMIN = 'admin',
   TEACHER = 'teacher',
@@ -16,7 +11,7 @@ export const UserRoleLabel: FieldValues = {
   [UserRole.TEACHER]: { label: 'Professor', color: 'secondary' },
 };
 
-enum UserStatus {
+export enum UserStatus {
   ACTIVE = 'active',
   INACTIVE = 'inactive',
 }
@@ -25,6 +20,16 @@ export const UserStatusLabel = {
   [UserStatus.ACTIVE]: 'Ativo',
   [UserStatus.INACTIVE]: 'Inativo',
 };
+
+export const userRoleOptions = [
+  { value: UserRole.ADMIN, label: 'Administrador' },
+  { value: UserRole.TEACHER, label: 'Professor' },
+];
+
+export const userStatusOptions = [
+  { value: UserStatus.ACTIVE, label: 'Ativo' },
+  { value: UserStatus.INACTIVE, label: 'Inativo' },
+];
 
 export type User = {
   id: string;

@@ -1,8 +1,12 @@
 'use client';
 
+import { usersService } from '@/services/user.service';
 import { User } from '@/types/user.type';
 import { Box, Grid, Heading, HStack } from '@chakra-ui/react';
 import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import swal from 'sweetalert2';
 import { DrawerStudentForm } from '../forms/student/drawer-student-form';
 import { StudentCard } from '../molecules/student-card';
 
@@ -11,10 +15,30 @@ type StudentListProps = {
 };
 
 export const StudentList = ({ students }: StudentListProps) => {
-  const { push } = useRouter();
+  const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
 
-  const handleSelectStudent = (studentId: string) => {
-    push(`/students/${studentId}`);
+  const { refresh } = useRouter();
+
+  const handleSelectStudentToEdit = (student: User) => {
+    setSelectedStudent(student);
+  };
+
+  const handleDeleteStudent = (student: User) => {
+    swal.fire({
+      title: 'Tem certeza?',
+      text: `Você está prestes a excluir ${student.name}. Esta ação não pode ser desfeita.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      preConfirm: async () => {
+        const result = await usersService.delete(student.id);
+        if (result) {
+          refresh();
+          toast.success('Aluno excluído com sucesso!');
+        }
+      },
+    });
   };
 
   return (
@@ -25,7 +49,10 @@ export const StudentList = ({ students }: StudentListProps) => {
             Alunos
           </Heading>
         </Box>
-        <DrawerStudentForm />
+        <DrawerStudentForm
+          student={selectedStudent}
+          onClose={() => setSelectedStudent(null)}
+        />
       </HStack>
 
       <Grid
@@ -37,7 +64,8 @@ export const StudentList = ({ students }: StudentListProps) => {
           <StudentCard
             key={student.id}
             student={student}
-            onClick={() => handleSelectStudent(student.id)}
+            onEditClick={() => handleSelectStudentToEdit(student)}
+            onDeleteClick={() => handleDeleteStudent(student)}
           />
         ))}
       </Grid>

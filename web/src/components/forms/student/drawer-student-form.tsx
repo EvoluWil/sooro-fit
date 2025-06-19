@@ -1,11 +1,13 @@
 import { DrawerBase } from '@/components/atoms/drawer-base';
 import { InputText } from '@/components/molecules/input-text';
-import { User } from '@/types/user.type';
+import { Select } from '@/components/molecules/select';
+import { User, userStatusOptions } from '@/types/user.type';
 import { Button } from '@chakra-ui/react';
 import { useStudentForm } from './hook-student-form';
 
 export type DrawerStudentFormProps = {
-  student?: User;
+  student?: User | null;
+  onClose: () => void;
 };
 
 export const DrawerStudentForm: React.FC<DrawerStudentFormProps> = (props) => {
@@ -14,7 +16,7 @@ export const DrawerStudentForm: React.FC<DrawerStudentFormProps> = (props) => {
   return (
     <>
       <Button onClick={onToggle} p={4}>
-        {isEditing ? 'Editar Aluno' : 'Adicionar Aluno'}
+        Adicionar Aluno
       </Button>
       <DrawerBase
         title={isEditing ? 'Editar Aluno' : 'Adicionar Aluno'}
@@ -31,6 +33,16 @@ export const DrawerStudentForm: React.FC<DrawerStudentFormProps> = (props) => {
               label="Nome do Aluno"
               placeholder="Digite o nome do aluno"
             />
+
+            {isEditing && (
+              <Select
+                name="status"
+                control={control}
+                label="Status"
+                placeholder="Selecione o status"
+                options={userStatusOptions}
+              />
+            )}
 
             {!isEditing && (
               <>

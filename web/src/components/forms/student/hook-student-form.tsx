@@ -1,18 +1,23 @@
 import { studentsService } from '@/services/student.service';
+import { UserStatus } from '@/types/user.type';
 import { useDisclosure } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import { DrawerStudentFormProps } from './drawer-student-form';
 import {
   StudentForm,
-  studentFormEditSchema,
+  studentFormBaseSchema,
+  studentFormCreateSchema,
   studentFormInitialValues,
-  studentFormSchema,
 } from './schema-student-form';
 
-export const useStudentForm = ({ student }: DrawerStudentFormProps) => {
+export const useStudentForm = ({
+  student,
+  onClose: emitClose,
+}: DrawerStudentFormProps) => {
   const isEditing = !!student;
   const { refresh } = useRouter();
   const { open, onClose, onToggle } = useDisclosure();
@@ -20,10 +25,11 @@ export const useStudentForm = ({ student }: DrawerStudentFormProps) => {
     defaultValues: isEditing
       ? {
           name: student?.name || '',
+          status: student?.status as UserStatus,
         }
       : studentFormInitialValues,
     resolver: yupResolver(
-      isEditing ? studentFormEditSchema : studentFormSchema,
+      isEditing ? studentFormBaseSchema : studentFormCreateSchema,
     ),
   });
 
@@ -58,7 +64,20 @@ export const useStudentForm = ({ student }: DrawerStudentFormProps) => {
   const handleClose = () => {
     reset(studentFormInitialValues);
     onClose();
+    if (emitClose) {
+      emitClose();
+    }
   };
+
+  useEffect(() => {
+    if (student) {
+      onToggle();
+      reset({
+        name: student.name,
+        status: student.status,
+      });
+    }
+  }, [student]);
 
   return {
     control,

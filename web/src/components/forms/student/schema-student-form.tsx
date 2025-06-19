@@ -1,8 +1,10 @@
+import { UserStatus } from '@/types/user.type';
 import * as yup from 'yup';
 
 export type StudentForm = {
   name: string;
   username?: string;
+  status: UserStatus;
   password?: string;
   passwordConfirmation?: string;
 };
@@ -10,18 +12,23 @@ export type StudentForm = {
 export const studentFormInitialValues: StudentForm = {
   name: '',
   username: '',
+  status: UserStatus.ACTIVE,
   password: '',
   passwordConfirmation: '',
 };
 
-export const studentFormEditSchema = yup.object().shape({
+export const studentFormBaseSchema = yup.object().shape({
   name: yup
     .string()
     .required('Nome é obrigatório')
     .min(3, 'Nome deve ter pelo menos 3 caracteres'),
+  status: yup
+    .mixed<UserStatus>()
+    .oneOf(Object.values(UserStatus), 'Status deve ser ativo ou inativo')
+    .required('Status é obrigatório'),
 });
 
-export const studentFormSchema = yup
+export const studentFormCreateSchema = yup
   .object()
   .shape({
     username: yup
@@ -42,4 +49,4 @@ export const studentFormSchema = yup
       .required('Confirmação de senha é obrigatória')
       .oneOf([yup.ref('password')], 'Senhas não coincidem'),
   })
-  .concat(studentFormEditSchema);
+  .concat(studentFormBaseSchema);
