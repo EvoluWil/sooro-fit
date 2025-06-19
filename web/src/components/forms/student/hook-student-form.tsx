@@ -1,8 +1,7 @@
-import { studentsService } from '@/services/student.service';
+import { useStudentMutation } from '@/hooks/queries/student';
 import { UserStatus } from '@/types/user.type';
 import { useDisclosure } from '@chakra-ui/react';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
@@ -19,7 +18,7 @@ export const useStudentForm = ({
   onClose: emitClose,
 }: DrawerStudentFormProps) => {
   const isEditing = !!student;
-  const { refresh } = useRouter();
+  const mutation = useStudentMutation();
   const { open, onClose, onToggle } = useDisclosure();
   const { control, handleSubmit, reset } = useForm<StudentForm>({
     defaultValues: isEditing
@@ -34,11 +33,13 @@ export const useStudentForm = ({
   });
 
   const handleCreateStudent = async (data: StudentForm) => {
-    const result = await studentsService.create(data);
+    const result = await mutation.mutateAsync({
+      type: 'create',
+      data,
+    });
 
     if (result) {
       toast.success('Aluno criado com sucesso!');
-      refresh();
       handleClose();
     }
   };
@@ -48,11 +49,14 @@ export const useStudentForm = ({
       return toast.error('Aluno não encontrado.');
     }
 
-    const result = await studentsService.update(student.id, data);
+    const result = await mutation.mutateAsync({
+      type: 'update',
+      id: student.id,
+      data,
+    });
 
     if (result) {
       toast.success('Aluno atualizado com sucesso!');
-      refresh();
       handleClose();
     }
   };

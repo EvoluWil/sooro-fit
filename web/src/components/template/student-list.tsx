@@ -1,9 +1,8 @@
 'use client';
 
-import { usersService } from '@/services/user.service';
+import { useStudentMutation, useStudentQuery } from '@/hooks/queries/student';
 import { User } from '@/types/user.type';
 import { Box, Grid, Heading, HStack } from '@chakra-ui/react';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import swal from 'sweetalert2';
@@ -17,8 +16,9 @@ type StudentListProps = {
 
 export const StudentList = ({ students }: StudentListProps) => {
   const [selectedStudent, setSelectedStudent] = useState<User | null>(null);
+  const { data = students } = useStudentQuery();
 
-  const { refresh } = useRouter();
+  const mutation = useStudentMutation();
 
   const handleSelectStudentToEdit = (student: User) => {
     setSelectedStudent(student);
@@ -33,9 +33,11 @@ export const StudentList = ({ students }: StudentListProps) => {
       confirmButtonText: 'Sim, excluir',
       cancelButtonText: 'Cancelar',
       preConfirm: async () => {
-        const result = await usersService.delete(student.id);
+        const result = await mutation.mutateAsync({
+          type: 'delete',
+          id: student.id,
+        });
         if (result) {
-          refresh();
           toast.success('Aluno excluído com sucesso!');
         }
       },
@@ -56,13 +58,13 @@ export const StudentList = ({ students }: StudentListProps) => {
         />
       </HStack>
 
-      {students.length === 0 && <NoData message="Nenhum aluno encontrado." />}
+      {data.length === 0 && <NoData message="Nenhum aluno encontrado." />}
       <Grid
         templateColumns="repeat(auto-fill, minmax(320px, 1fr))"
         gap={4}
         mt={8}
       >
-        {students.map((student) => (
+        {data.map((student) => (
           <StudentCard
             key={student.id}
             student={student}

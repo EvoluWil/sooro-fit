@@ -47,11 +47,13 @@ export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
       confirmButtonText: 'Sim, excluir',
       cancelButtonText: 'Cancelar',
       preConfirm: async () => {
-        await mutation.mutateAsync({
+        const result = await mutation.mutateAsync({
           type: 'delete',
           id: bmiAssessment.id,
         });
-        toast.success('Avaliação de IMC excluída com sucesso!');
+        if (result) {
+          toast.success('Avaliação de IMC excluída com sucesso!');
+        }
       },
     });
   };
