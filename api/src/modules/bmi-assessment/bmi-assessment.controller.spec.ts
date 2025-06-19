@@ -30,16 +30,18 @@ describe('BmiAssessmentController', () => {
   });
 
   it('should call create on BmiAssessmentService', async () => {
-    await expect(controller.create({} as any)).resolves.toEqual({ ok: true });
+    await expect(
+      controller.create({} as any, { id: '1' } as any),
+    ).resolves.toEqual({ ok: true });
     expect(service.create).toHaveBeenCalled();
   });
 
   it('should call findAll on BmiAssessmentService', async () => {
-    await expect(controller.findAll({ id: '1' } as any)).resolves.toEqual([
+    await expect(controller.findAll({}, { id: '1' } as any)).resolves.toEqual([
       'assessment1',
       'assessment2',
     ]);
-    expect(service.findAll).toHaveBeenCalledWith('1');
+    expect(service.findAll).toHaveBeenCalledWith('1', {});
   });
 
   it('should call update on BmiAssessmentService', async () => {

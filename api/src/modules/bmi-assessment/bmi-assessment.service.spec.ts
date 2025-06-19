@@ -17,6 +17,8 @@ jest.mock('src/utils/role-validator', () => ({
     isStudent: jest.fn(() => false),
     isAdmin: jest.fn(() => false),
     isTeacher: jest.fn(() => false),
+    isStudentOnly: jest.fn(() => false),
+    isTeacherOnly: jest.fn(() => false),
   },
 }));
 
@@ -31,6 +33,14 @@ describe('BmiAssessmentService', () => {
   const mockUserRepository = {
     findOne: jest.fn(),
   };
+
+  const mockQueryBuilder = {
+    leftJoinAndSelect: jest.fn().mockReturnThis(),
+    where: jest.fn().mockReturnThis(),
+    andWhere: jest.fn().mockReturnThis(),
+    getMany: jest.fn().mockResolvedValue([]),
+  };
+
   const mockBmiAssessmentRepository = {
     create: jest.fn(),
     save: jest.fn(),
@@ -38,6 +48,7 @@ describe('BmiAssessmentService', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
+    createQueryBuilder: jest.fn(() => mockQueryBuilder),
   };
 
   beforeEach(async () => {
@@ -65,16 +76,16 @@ describe('BmiAssessmentService', () => {
   describe('create', () => {
     it('should throw if student not found', async () => {
       userRepository.findOne.mockResolvedValueOnce(null);
-      await expect(service.create({ studentId: '1' } as any)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.create({ studentId: '1' } as any, '2'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if student is inactive', async () => {
       userRepository.findOne.mockResolvedValueOnce({ status: 'inactive' });
-      await expect(service.create({ studentId: '1' } as any)).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.create({ studentId: '1' } as any, '2'),
+      ).rejects.toThrow(NotFoundException);
     });
 
     it('should throw if evaluator not found', async () => {
@@ -83,7 +94,7 @@ describe('BmiAssessmentService', () => {
         .mockResolvedValueOnce(null);
 
       await expect(
-        service.create({ studentId: '1', evaluatorId: '2' } as any),
+        service.create({ studentId: '1', evaluatorId: '2' } as any, '2'),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -100,12 +111,15 @@ describe('BmiAssessmentService', () => {
       bmiAssessmentRepository.create.mockReturnValue({});
       bmiAssessmentRepository.save.mockResolvedValue({});
 
-      const result = await service.create({
-        studentId: '1',
-        evaluatorId: '2',
-        height: 1.7,
-        weight: 60,
-      } as any);
+      const result = await service.create(
+        {
+          studentId: '1',
+          evaluatorId: '2',
+          height: 1.7,
+          weight: 60,
+        } as any,
+        '2',
+      );
 
       expect(result).toHaveProperty('ok', true);
     });
@@ -118,36 +132,29 @@ describe('BmiAssessmentService', () => {
     });
 
     it('should return assessments for student', async () => {
-      const user = { id: '1', role: 'student', assessments: [1, 2] };
-      userRepository.findOne.mockResolvedValue(user);
-      (roleValidator.isStudent as jest.Mock).mockReturnValue(true);
-      (roleValidator.isAdmin as jest.Mock).mockReturnValue(false);
-      (roleValidator.isTeacher as jest.Mock).mockReturnValue(false);
-
+      userRepository.findOne.mockResolvedValue({ id: '1', role: 'student' });
+      (roleValidator.isStudentOnly as jest.Mock).mockReturnValue(true);
+      mockQueryBuilder.getMany.mockResolvedValueOnce([1, 2]);
       const result = await service.findAll('1');
       expect(result).toEqual([1, 2]);
     });
 
     it('should return all for admin', async () => {
-      const user = { id: '1', role: 'admin', assessments: [] };
-      userRepository.findOne.mockResolvedValue(user);
-      (roleValidator.isStudent as jest.Mock).mockReturnValue(false);
+      userRepository.findOne.mockResolvedValue({ id: '1', role: 'admin' });
+      (roleValidator.isStudentOnly as jest.Mock).mockReturnValue(false);
+      (roleValidator.isTeacherOnly as jest.Mock).mockReturnValue(false);
       (roleValidator.isAdmin as jest.Mock).mockReturnValue(true);
-      (roleValidator.isTeacher as jest.Mock).mockReturnValue(false);
-
-      bmiAssessmentRepository.find.mockResolvedValue([1, 2, 3]);
+      mockQueryBuilder.getMany.mockResolvedValueOnce([1, 2, 3]);
       const result = await service.findAll('1');
       expect(result).toEqual([1, 2, 3]);
     });
 
     it('should return teacher assessments', async () => {
-      const user = { id: '1', role: 'teacher', assessments: [] };
-      userRepository.findOne.mockResolvedValue(user);
-      (roleValidator.isStudent as jest.Mock).mockReturnValue(false);
+      userRepository.findOne.mockResolvedValue({ id: '1', role: 'teacher' });
+      (roleValidator.isStudentOnly as jest.Mock).mockReturnValue(false);
+      (roleValidator.isTeacherOnly as jest.Mock).mockReturnValue(true);
       (roleValidator.isAdmin as jest.Mock).mockReturnValue(false);
-      (roleValidator.isTeacher as jest.Mock).mockReturnValue(true);
-
-      bmiAssessmentRepository.find.mockResolvedValue([4, 5]);
+      mockQueryBuilder.getMany.mockResolvedValueOnce([4, 5]);
       const result = await service.findAll('1');
       expect(result).toEqual([4, 5]);
     });
