@@ -54,7 +54,7 @@ export const useBmiForm = ({ bmi, onClose: emitClose }: DrawerBmiFormProps) => {
 
   const fetchStudents = async () => {
     try {
-      const studentsData = await studentsService.findAll();
+      const studentsData = await studentsService.findAll({ active: true });
       if (studentsData) {
         setStudents(
           studentsData?.map((student: User) => ({

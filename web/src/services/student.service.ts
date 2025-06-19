@@ -11,8 +11,8 @@ class StudentService {
     return data;
   }
 
-  async findAll() {
-    const { data } = await api.get<User[]>('/student');
+  async findAll(params: { active?: boolean } = {}) {
+    const { data } = await api.get<User[]>('/student', { params });
     return data;
   }
 
