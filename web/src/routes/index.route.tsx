@@ -12,10 +12,10 @@ type Route = {
 
 export const routes: Route[] = [
   {
-    path: '/dashboard',
-    rule: roleValidator.isStudentOnly,
+    path: '/bmi-assessment',
+    rule: roleValidator.isStudent,
     icon: <FiHome />,
-    label: 'Início',
+    label: 'Avaliações de IMC',
   },
   {
     path: '/students',

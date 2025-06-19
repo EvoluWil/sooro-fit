@@ -1,0 +1,121 @@
+'use client';
+
+import { useSession } from '@/providers/session.provider';
+import { bmiService } from '@/services/bmi.service';
+import { BmiAssessment } from '@/types/bmi-assessment.type';
+import { roleValidator } from '@/utils/role-validator';
+import { Box, Heading, HStack, Stack, Table } from '@chakra-ui/react';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import swal from 'sweetalert2';
+import { DrawerBmiForm } from '../forms/bmi/drawer-bmi-form';
+import { BmiCell } from '../molecules/bmi-cell';
+
+type BmiAssessmentListProps = {
+  bmiAssessments: BmiAssessment[];
+};
+
+export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
+  bmiAssessments,
+}) => {
+  const [selectedBmiAssessment, setSelectedBmiAssessment] =
+    useState<BmiAssessment | null>(null);
+
+  const { refresh } = useRouter();
+  const { user } = useSession();
+
+  const handleSelectBmiAssessmentToEdit = (bmiAssessment: BmiAssessment) => {
+    setSelectedBmiAssessment(bmiAssessment);
+  };
+
+  const handleDeleteBmiAssessment = (bmiAssessment: BmiAssessment) => {
+    swal.fire({
+      title: 'Tem certeza?',
+      text: `Você está prestes a excluir a avaliação de IMC de ${bmiAssessment.student?.name}. Esta ação não pode ser desfeita.`,
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonText: 'Sim, excluir',
+      cancelButtonText: 'Cancelar',
+      preConfirm: async () => {
+        const result = await bmiService.delete(bmiAssessment.id);
+        if (result) {
+          refresh();
+          toast.success('Avaliação de IMC excluída com sucesso!');
+        }
+      },
+    });
+  };
+
+  console.log('bmiAssessments', bmiAssessments);
+
+  return (
+    <Box>
+      <HStack justify="space-between" align="center">
+        <Box>
+          <Heading size="2xl" color="brand.700">
+            Avaliações de IMC
+          </Heading>
+        </Box>
+        <DrawerBmiForm
+          bmi={selectedBmiAssessment}
+          onClose={() => setSelectedBmiAssessment(null)}
+        />
+      </HStack>
+
+      {bmiAssessments?.length === 0 && (
+        <Box mt={4} p={4} bg="gray.50" rounded="md" textAlign="center">
+          <Heading size="md" color="gray.500">
+            Nenhuma avaliação de IMC encontrada.
+          </Heading>
+        </Box>
+      )}
+
+      {bmiAssessments.length > 0 && (
+        <Stack p={4} mt={4} bg="gray.50" rounded="md">
+          <Table.Root size="md" p={4}>
+            <Table.Header>
+              <Table.Row bg="transparent" h={12}>
+                <Table.ColumnHeader p={2}>#</Table.ColumnHeader>
+                <Table.ColumnHeader p={2}>ALUNO</Table.ColumnHeader>
+                <Table.ColumnHeader p={2} textAlign="center">
+                  AVALIAÇÃO
+                </Table.ColumnHeader>
+                <Table.ColumnHeader p={2} textAlign="end">
+                  IMC
+                </Table.ColumnHeader>
+                <Table.ColumnHeader p={2} textAlign="end">
+                  ALTURA
+                </Table.ColumnHeader>
+                <Table.ColumnHeader p={2} textAlign="end">
+                  PESO
+                </Table.ColumnHeader>
+                <Table.ColumnHeader p={2} textAlign="center">
+                  DATA
+                </Table.ColumnHeader>
+                <Table.ColumnHeader p={2}>RESPONSÁVEL</Table.ColumnHeader>
+                {user && roleValidator.isTeacher(user) && (
+                  <Table.ColumnHeader p={2}>AÇÕES</Table.ColumnHeader>
+                )}
+              </Table.Row>
+            </Table.Header>
+
+            <Table.Body>
+              {bmiAssessments?.map((bmiAssessment, index) => (
+                <BmiCell
+                  key={bmiAssessment.id}
+                  bmiAssessment={bmiAssessment}
+                  index={index}
+                  onEditClick={() =>
+                    handleSelectBmiAssessmentToEdit(bmiAssessment)
+                  }
+                  onDeleteClick={() => handleDeleteBmiAssessment(bmiAssessment)}
+                />
+              ))}
+            </Table.Body>
+          </Table.Root>
+        </Stack>
+      )}
+    </Box>
+  );
+};
