@@ -10,6 +10,10 @@ class RoleValidator {
     return user.role === UserRole.TEACHER || this.isAdmin(user);
   }
 
+  isTeacherOnly(user: User): boolean {
+    return user.role === UserRole.TEACHER;
+  }
+
   isStudent(user: User): boolean {
     return (
       user.role === UserRole.STUDENT ||

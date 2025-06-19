@@ -5,6 +5,7 @@ import { bmiCalculator } from 'src/utils/bmi-calculator';
 import { roleValidator } from 'src/utils/role-validator';
 import { Repository } from 'typeorm';
 import { User } from '../user/entities/user.entity';
+import { BmiQueryParams } from './bmi-assessment.controller';
 import { CreateBmiAssessmentDto } from './dto/create-bmi-assessment.dto';
 import { UpdateBmiAssessmentDto } from './dto/update-bmi-assessment.dto';
 import { BmiAssessment } from './entities/bmi-assessment.entity';
@@ -63,35 +64,69 @@ export class BmiAssessmentService {
     };
   }
 
-  async findAll(userId: string) {
+  async findAll(authUserId: string, query?: BmiQueryParams) {
     const user = await this.userRepository.findOne({
-      where: { id: userId },
+      where: { id: authUserId },
     });
 
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
     }
 
+    const qb = this.bmiAssessmentRepository
+      .createQueryBuilder('bmi')
+      .leftJoinAndSelect('bmi.student', 'student')
+      .leftJoinAndSelect('bmi.evaluator', 'evaluator');
+
     if (roleValidator.isStudentOnly(user)) {
-      return this.bmiAssessmentRepository.find({
-        where: { student: { id: userId } },
-        relations: ['student', 'evaluator'],
-      });
+      qb.where('student.id = :authUserId', { authUserId });
+      return qb.getMany();
+    }
+
+    if (roleValidator.isTeacherOnly(user)) {
+      qb.where('evaluator.id = :authUserId', { authUserId });
+
+      if (query?.studentId) {
+        const exists = await this.bmiAssessmentRepository.findOne({
+          where: {
+            student: { id: query.studentId },
+            evaluator: { id: authUserId },
+          },
+        });
+
+        if (!exists) {
+          throw new NotFoundException(
+            'Aluno não encontrado ou sem vínculo com este professor',
+          );
+        }
+
+        qb.andWhere('student.id = :studentId', {
+          studentId: query.studentId,
+        });
+      }
+      return qb.getMany();
     }
 
     if (roleValidator.isAdmin(user)) {
-      return this.bmiAssessmentRepository.find({
-        relations: ['student', 'evaluator'],
-      });
-    }
+      const where: string[] = [];
+      const params: Record<string, string> = {};
 
-    if (roleValidator.isTeacher(user)) {
-      return this.bmiAssessmentRepository.find({
-        where: { evaluator: { id: userId } },
-        relations: ['student', 'evaluator'],
-      });
-    }
+      if (query?.studentId) {
+        where.push('student.id = :studentId');
+        params.studentId = query.studentId;
+      }
 
+      if (query?.teacherId) {
+        where.push('evaluator.id = :teacherId');
+        params.teacherId = query.teacherId;
+      }
+
+      if (where.length > 0) {
+        qb.where(where.join(' AND '), params);
+      }
+
+      return qb.getMany();
+    }
     return [];
   }
 

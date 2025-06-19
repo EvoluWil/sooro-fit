@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
 } from '@nestjs/common';
 import { User } from 'src/@types/user.type';
 import { AuthUser } from 'src/decorators/auth-user.decorator';
@@ -22,6 +23,11 @@ import {
   updateBmiAssessmentSchema,
 } from './dto/update-bmi-assessment.dto';
 
+export type BmiQueryParams = {
+  studentId?: string;
+  teacherId?: string;
+};
+
 @Controller('bmi-assessment')
 export class BmiAssessmentController {
   constructor(private readonly bmiAssessmentService: BmiAssessmentService) {}
@@ -37,8 +43,8 @@ export class BmiAssessmentController {
   }
 
   @Get()
-  findAll(@AuthUser() user: User) {
-    return this.bmiAssessmentService.findAll(user.id);
+  findAll(@Query() query: BmiQueryParams, @AuthUser() user: User) {
+    return this.bmiAssessmentService.findAll(user.id, query);
   }
 
   @Put(':id')
