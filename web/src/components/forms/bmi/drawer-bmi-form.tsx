@@ -8,7 +8,6 @@ import { useBmiForm } from './hook-bmi-form';
 export type DrawerBmiFormProps = {
   bmi?: BmiAssessment | null;
   onClose: () => void;
-  onSuccess: () => void;
 };
 
 export const DrawerBmiForm: React.FC<DrawerBmiFormProps> = (props) => {

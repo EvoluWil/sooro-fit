@@ -1,5 +1,5 @@
 import { SelectOption } from '@/components/atoms/select-base';
-import { bmiService } from '@/services/bmi.service';
+import { useBmiMutation } from '@/hooks/queries/bmi';
 import { studentsService } from '@/services/student.service';
 import { User } from '@/types/user.type';
 import { useDisclosure } from '@chakra-ui/react';
@@ -14,14 +14,11 @@ import {
   bmiFormInitialValues,
 } from './schema-bmi-form';
 
-export const useBmiForm = ({
-  bmi,
-  onClose: emitClose,
-  onSuccess,
-}: DrawerBmiFormProps) => {
+export const useBmiForm = ({ bmi, onClose: emitClose }: DrawerBmiFormProps) => {
   const isEditing = !!bmi;
   const [students, setStudents] = useState<SelectOption[]>([]);
   const { open, onClose, onToggle } = useDisclosure();
+  const mutation = useBmiMutation();
 
   const { control, handleSubmit, reset } = useForm<BmiForm>({
     defaultValues: bmiFormInitialValues,
@@ -29,11 +26,13 @@ export const useBmiForm = ({
   });
 
   const handleCreateBmi = async (data: BmiForm) => {
-    const result = await bmiService.create(data);
+    const result = await mutation.mutateAsync({
+      type: 'create',
+      data,
+    });
 
     if (result) {
       toast.success('Avaliação de IMC criada com sucesso!');
-      onSuccess();
       handleClose();
     }
   };
@@ -42,14 +41,14 @@ export const useBmiForm = ({
     if (!bmi) {
       return toast.error('Avaliação de IMC não encontrada.');
     }
-    const result = await bmiService.update(bmi.id, {
-      height: data.height,
-      weight: data.weight,
+    const result = await mutation.mutateAsync({
+      type: 'update',
+      id: bmi.id,
+      data,
     });
 
     if (result) {
       toast.success('Avaliação de IMC atualizada com sucesso!');
-      onSuccess();
       handleClose();
     }
   };
