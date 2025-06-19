@@ -3,6 +3,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { UserRole } from 'src/enums/user-role.enum';
+import { UserStatus } from 'src/enums/user-status.enum';
 import { User } from '../user/entities/user.entity';
 import { StudentService } from './student.service';
 
@@ -84,9 +85,9 @@ describe('StudentService', () => {
   describe('update', () => {
     it('should throw if student not found', async () => {
       userRepository.findOne.mockResolvedValue(null);
-      await expect(service.update('1', { name: 'test' })).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        service.update('1', { name: 'test', status: UserStatus.ACTIVE }),
+      ).rejects.toThrow(NotFoundException);
     });
     it('should update student if found', async () => {
       userRepository.findOne.mockResolvedValue({
@@ -94,7 +95,10 @@ describe('StudentService', () => {
         role: UserRole.STUDENT,
       });
       userRepository.update.mockResolvedValue({});
-      const result = await service.update('1', { name: 'test' });
+      const result = await service.update('1', {
+        name: 'test',
+        status: UserStatus.ACTIVE,
+      });
       expect(result).toHaveProperty('ok', true);
     });
   });

@@ -108,6 +108,12 @@ export class AuthService {
       throw new BadRequestException('Refresh token inválido ou expirado');
     }
 
+    if (auth.user?.status === UserStatus.INACTIVE) {
+      throw new ForbiddenException(
+        'Usuário sem permissão para acessar o sistema',
+      );
+    }
+
     const newRefreshToken = randomBytes(64).toString('hex');
     const newExpireAt = new Date(Date.now() + SEVEN_DAYS);
 
