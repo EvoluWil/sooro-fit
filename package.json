@@ -1,0 +1,24 @@
+{
+  "name": "sooro-fit",
+  "version": "1.0.0",
+  "description": "Este projeto foi desenvolvido como parte do teste para Desenvolvedor Full Stack da Sooro. Ele consiste em um sistema web completo, com funcionalidades voltadas ao controle e acompanhamento da evolução física dos alunos de uma academia, com base no IMC (Índice de Massa Corporal).",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install && npm install --workspace=api && npm install --workspace=web",
+    "dev": "concurrently -n \"API,WEB\" -c \"blue,green\" \"npm run start:dev --workspace=api\" \"npm run dev --workspace=web\"",
+    "dev:api": "npm run start:dev --workspace=api",
+    "dev:web": "npm run dev --workspace=web",
+    "migration:run": "npm run migration:run --workspace=api",
+    "seed": "npm run seed --workspace=api"
+  },
+  "devDependencies": {
+    "concurrently": "^8.0.1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "workspaces": [
+    "api",
+    "web"
+  ]
+}
