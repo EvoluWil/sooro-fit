@@ -17,6 +17,10 @@ class RoleValidator {
       this.isAdmin(user)
     );
   }
+
+  isStudentOnly(user: User): boolean {
+    return user.role === UserRole.STUDENT;
+  }
 }
 
 export const roleValidator = new RoleValidator();

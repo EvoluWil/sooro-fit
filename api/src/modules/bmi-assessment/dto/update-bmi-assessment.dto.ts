@@ -2,19 +2,24 @@ import * as yup from 'yup';
 
 export const updateBmiAssessmentSchema = yup.object().shape({
   height: yup
-    .number()
-    .required()
-    .positive('Altura deve ser positiva')
-    .max(3, 'Altura não pode exceder 3 metros'),
+    .string()
+    .required('Altura é obrigatória')
+    .matches(/^\d+(\.\d+)?$/, 'Altura deve ser um número válido')
+    .test('max', 'Altura não pode exceder 300 cm', (value) => {
+      const num = parseFloat(value);
+      return !value || (num > 100 && num <= 300);
+    }),
   weight: yup
-    .number()
-    .required()
-    .positive('Peso deve ser positivo')
-    .max(500, 'Peso não pode exceder 500 kg'),
+    .string()
+    .required('Peso é obrigatório')
+    .matches(/^\d+(\.\d+)?$/, 'Peso deve ser um número válido')
+    .test('max', 'Peso não pode exceder 500 kg', (value) => {
+      const num = parseFloat(value);
+      return !value || (num > 30 && num <= 500);
+    }),
 });
 
 export class UpdateBmiAssessmentDto {
   height: number;
   weight: number;
-  bmi: number;
 }

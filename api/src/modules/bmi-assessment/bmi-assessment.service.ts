@@ -19,8 +19,11 @@ export class BmiAssessmentService {
     private readonly bmiAssessmentRepository: Repository<BmiAssessment>,
   ) {}
 
-  async create(createBmiAssessmentDto: CreateBmiAssessmentDto) {
-    const { studentId, evaluatorId, height, weight } = createBmiAssessmentDto;
+  async create(
+    createBmiAssessmentDto: CreateBmiAssessmentDto,
+    evaluatorId: string,
+  ) {
+    const { studentId, height, weight } = createBmiAssessmentDto;
 
     const student = await this.userRepository.findOne({
       where: { id: studentId },
@@ -46,6 +49,8 @@ export class BmiAssessmentService {
 
     const bmiAssessment = this.bmiAssessmentRepository.create({
       ...bmiData,
+      height,
+      weight,
       student,
       evaluator,
     });
@@ -61,24 +66,29 @@ export class BmiAssessmentService {
   async findAll(userId: string) {
     const user = await this.userRepository.findOne({
       where: { id: userId },
-      relations: ['assessments'],
     });
 
     if (!user) {
       throw new NotFoundException('Usuário não encontrado');
     }
 
-    if (roleValidator.isStudent(user)) {
-      return user.assessments;
+    if (roleValidator.isStudentOnly(user)) {
+      return this.bmiAssessmentRepository.find({
+        where: { student: { id: userId } },
+        relations: ['student', 'evaluator'],
+      });
     }
 
     if (roleValidator.isAdmin(user)) {
-      return this.bmiAssessmentRepository.find();
+      return this.bmiAssessmentRepository.find({
+        relations: ['student', 'evaluator'],
+      });
     }
 
     if (roleValidator.isTeacher(user)) {
       return this.bmiAssessmentRepository.find({
         where: { evaluator: { id: userId } },
+        relations: ['student', 'evaluator'],
       });
     }
 
@@ -109,7 +119,15 @@ export class BmiAssessmentService {
       throw new NotFoundException('Avaliação de IMC não encontrada');
     }
 
-    await this.bmiAssessmentRepository.update(id, updateBmiAssessmentDto);
+    const bmiData = bmiCalculator.calculate(
+      updateBmiAssessmentDto.height,
+      updateBmiAssessmentDto.weight,
+    );
+
+    await this.bmiAssessmentRepository.update(id, {
+      ...updateBmiAssessmentDto,
+      ...bmiData,
+    });
 
     return {
       ok: true,

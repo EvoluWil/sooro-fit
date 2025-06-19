@@ -35,8 +35,8 @@ class BmiCalculator {
       throw new Error('Height and weight must be positive numbers');
     }
 
-    const heightInMeters = (height * 100) / 100;
-    const bmi = (weight * 100) / (heightInMeters * heightInMeters);
+    const heightInMeters = height / 100;
+    const bmi = weight / (heightInMeters * heightInMeters);
 
     return {
       bmi: parseFloat(bmi.toFixed(2)),

@@ -37,7 +37,7 @@ async function seed() {
   await dataSource.getRepository(User).save([admin, teacher, student]);
 
   const bmiAssessment = dataSource.getRepository(BmiAssessment).create({
-    height: 1.75,
+    height: 175,
     weight: 70,
     bmi: 22.86,
     assessment: AssessmentLevel.NORMAL,

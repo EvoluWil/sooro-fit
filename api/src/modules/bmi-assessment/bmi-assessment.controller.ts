@@ -31,8 +31,9 @@ export class BmiAssessmentController {
   create(
     @Body(new YupValidationPipe(createBmiAssessmentSchema))
     createBmiAssessmentDto: CreateBmiAssessmentDto,
+    @AuthUser() user: User,
   ) {
-    return this.bmiAssessmentService.create(createBmiAssessmentDto);
+    return this.bmiAssessmentService.create(createBmiAssessmentDto, user.id);
   }
 
   @Get()
