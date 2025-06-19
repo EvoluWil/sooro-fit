@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import swal from 'sweetalert2';
+import { NoData } from '../atoms/no-data';
 import { DrawerStudentForm } from '../forms/student/drawer-student-form';
 import { StudentCard } from '../molecules/student-card';
 
@@ -55,6 +56,7 @@ export const StudentList = ({ students }: StudentListProps) => {
         />
       </HStack>
 
+      {students.length === 0 && <NoData message="Nenhum aluno encontrado." />}
       <Grid
         templateColumns="repeat(auto-fill, minmax(320px, 1fr))"
         gap={4}

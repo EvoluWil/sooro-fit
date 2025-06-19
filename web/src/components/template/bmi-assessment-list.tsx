@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import swal from 'sweetalert2';
+import { NoData } from '../atoms/no-data';
 import { DrawerBmiForm } from '../forms/bmi/drawer-bmi-form';
 import { BmiCell } from '../molecules/bmi-cell';
 import { DrawerBmiFilter } from '../organisms/bmi-assessments-filter/drawer-bmi-filter';
@@ -90,11 +91,7 @@ export const BmiAssessmentList: React.FC<BmiAssessmentListProps> = ({
       </HStack>
 
       {bmiAssessmentsState?.length === 0 && (
-        <Box mt={4} p={4} bg="gray.50" rounded="md" textAlign="center">
-          <Heading size="md" color="gray.500">
-            Nenhuma avaliação de IMC encontrada.
-          </Heading>
-        </Box>
+        <NoData message="Nenhuma avaliação de IMC encontrada." />
       )}
 
       {bmiAssessmentsState.length > 0 && (

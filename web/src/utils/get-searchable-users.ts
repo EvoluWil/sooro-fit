@@ -12,7 +12,7 @@ export const getUsersFilterOptions = (
   bmiAssessments: BmiAssessment[],
   user: User,
 ): UsersFilterOptions => {
-  if (roleValidator.isStudentOnly(user)) {
+  if (roleValidator.isStudentOnly(user) || !bmiAssessments?.length) {
     return { students: [], teachers: [] };
   }
 

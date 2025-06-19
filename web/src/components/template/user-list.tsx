@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 import swal from 'sweetalert2';
+import { NoData } from '../atoms/no-data';
 import { DrawerUserForm } from '../forms/user/drawer-user-form';
 import { UserCard } from '../molecules/user-card';
 
@@ -54,6 +55,8 @@ export const UserList = ({ users }: UserListProps) => {
           onClose={() => setSelectedUser(null)}
         />
       </HStack>
+
+      {users?.length === 0 && <NoData message="Nenhum usuário encontrado." />}
 
       <Grid
         templateColumns="repeat(auto-fill, minmax(320px, 1fr))"
