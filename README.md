@@ -1,7 +1,7 @@
 
 # 🏋️‍♂️ Sooro Fit
 
-Este projeto foi desenvolvido como parte do teste para Desenvolvedor Full Stack da Sooro. Ele consiste em um sistema web completo, com funcionalidades voltadas ao controle e acompanhamento da evolução física dos alunos de uma academia, com base no IMC (Índice de Massa Corporal).
+Este projeto foi desenvolvido como parte do teste para Desenvolvedor Full Stack da Sooro Renner. Ele consiste em um sistema web completo, com funcionalidades voltadas ao controle e acompanhamento da evolução física dos alunos de uma academia, com base no IMC (Índice de Massa Corporal).
 
 ## 📁 Estrutura do Projeto
 
@@ -96,6 +96,6 @@ npm run dev
 
 ## 📝 Considerações Finais
 
-Este projeto foi desenvolvido como parte do **desafio técnico da AiqFome**, com foco em performance, usabilidade, escalabilidade e boas práticas de desenvolvimento front-end.
+Este projeto foi desenvolvido como parte do **desafio técnico da Sooro Renner**, com foco em performance, usabilidade, escalabilidade e boas práticas de desenvolvimento front-end.
 
 Desenvolvido com 💛 por Willian Rodrigues.
