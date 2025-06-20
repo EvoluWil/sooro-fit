@@ -51,7 +51,7 @@ cd sooro-fit
 ### 2. Instale as dependências
 
 ```bash
-npm install
+npm install:all
 ```
 
 > Isso instala as dependências tanto da `api/` quanto da `web/`.
